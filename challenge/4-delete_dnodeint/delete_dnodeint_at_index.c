@@ -1,3 +1,4 @@
+
 #include "lists.h"
 #include <stdlib.h>
 
@@ -11,52 +12,46 @@
  */
 int delete_dnodeint_at_index(dlistint_t **head, unsigned int index)
 {
-    dlistint_t *tmp;
-    unsigned int p;
+    dlistint_t *tmp, *to_delete;
+    unsigned int i = 0;
 
     if (*head == NULL)
-    {
         return (-1);
-    }
-    
-    tmp = *head;
-    p = 0;
 
-    // Traverse the list to the desired index
-    while (p < index && tmp != NULL)
+    tmp = *head;
+
+    /* If we are deleting the head node */
+    if (index == 0)
+    {
+        to_delete = tmp;
+        *head = tmp->next; /* Move head pointer to next node */
+        if (*head != NULL)
+            (*head)->prev = NULL;
+        free(to_delete);
+        return (1);
+    }
+
+    /* Traverse to the node before the one to delete */
+    while (i < index && tmp != NULL)
     {
         tmp = tmp->next;
-        p++;
+        i++;
     }
 
-    // If index is out of bounds
+    /* If index is out of range */
     if (tmp == NULL)
-    {
         return (-1);
-    }
 
-    // If deleting the first node
-    if (tmp == *head)
-    {
-        *head = tmp->next;
-        if (*head != NULL)
-        {
-            (*head)->prev = NULL;
-        }
-    }
-    else
-    {
-        // Adjust pointers for the previous and next nodes
-        if (tmp->prev != NULL)
-        {
-            tmp->prev->next = tmp->next;
-        }
-        if (tmp->next != NULL)
-        {
-            tmp->next->prev = tmp->prev;
-        }
-    }
+    to_delete = tmp;
+    
+    /* Update pointers of adjacent nodes */
+    if (to_delete->prev)
+        to_delete->prev->next = to_delete->next;
 
-    free(tmp);
+    if (to_delete->next)
+        to_delete->next->prev = to_delete->prev;
+
+    free(to_delete);
+
     return (1);
 }
