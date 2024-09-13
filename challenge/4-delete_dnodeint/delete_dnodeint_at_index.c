@@ -11,43 +11,52 @@
  */
 int delete_dnodeint_at_index(dlistint_t **head, unsigned int index)
 {
-	dlistint_t *saved_head;
-	dlistint_t *tmp;
-	unsigned int p;
+    dlistint_t *tmp;
+    unsigned int p;
 
-	if (*head == NULL)
-	{
-		return (-1);
-	}
-	saved_head = *head;
-	p = 0;
-	while (p < index && *head != NULL)
-	{
-		*head = (*head)->next;
-		p++;
-	}
-	if (p != index)
-	{
-		*head = saved_head;
-		return (-1);
-	}
-	if (0 == index)
-	{
-		tmp = (*head)->next;
-		free(*head);
-		*head = tmp;
-		if (tmp != NULL)
-		{
-			tmp->prev = NULL;
-		}
-	}
-	else
-	{
-		(*head)->prev->prev = (*head)->prev;
-		free(*head);
-		if ((*head)->next)
-			(*head)->next->prev = (*head)->prev;
-		*head = saved_head;
-	}
-	return (1);
+    if (*head == NULL)
+    {
+        return (-1);
+    }
+    
+    tmp = *head;
+    p = 0;
+
+    // Traverse the list to the desired index
+    while (p < index && tmp != NULL)
+    {
+        tmp = tmp->next;
+        p++;
+    }
+
+    // If index is out of bounds
+    if (tmp == NULL)
+    {
+        return (-1);
+    }
+
+    // If deleting the first node
+    if (tmp == *head)
+    {
+        *head = tmp->next;
+        if (*head != NULL)
+        {
+            (*head)->prev = NULL;
+        }
+    }
+    else
+    {
+        // Adjust pointers for the previous and next nodes
+        if (tmp->prev != NULL)
+        {
+            tmp->prev->next = tmp->next;
+        }
+        if (tmp->next != NULL)
+        {
+            tmp->next->prev = tmp->prev;
+        }
+    }
+
+    free(tmp);
+    return (1);
 }
